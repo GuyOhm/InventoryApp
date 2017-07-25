@@ -1,0 +1,22 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">Inventory App</string>
+
+    <string name="empty_view_title_text">Don\'t be shy !</string>
+    <string name="empty_view_subtitle_text">You can start adding some products</string>
+    <string name="add_product_activity_name">Add product</string>
+    <string name="btn_decrease_qty">-</string>
+    <string name="btn_increase_qty">+</string>
+    <string name="btn_delete_product">delete</string>
+    <string name="btn_order_product">order</string>
+    <string name="btn_item_sale">sale</string>
+    <string name="edit_title_name">name</string>
+    <string name="edit_title_price">price</string>
+    <string name="edit_title_qty">quantity</string>
+    <string name="edit_title_supplier">supplier email</string>
+    <string name="edit_picture_button">Choose a pic</string>
+    <string name="edit_save_button">Save</string>
+    <string name="invalid_input_toast_message">Please enter valid data</string>
+    <string name="no_picture_toast_message">Please choose a picture</string>
+    <string name="dollar">$</string>
+    <string name="quantity_label">quantity: </string>
+</resources>
