@@ -19,4 +19,9 @@
     <string name="no_picture_toast_message">Please choose a picture</string>
     <string name="dollar">$</string>
     <string name="quantity_label">quantity: </string>
+    <string name="delete">Delete</string>
+    <string name="delete_dialog_msg">Delete this product?</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete_product_failed">Error with deleting the product</string>
+    <string name="delete_product_successful">Product deleted</string>
 </resources>

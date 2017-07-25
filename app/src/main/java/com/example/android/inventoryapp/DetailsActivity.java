@@ -1,10 +1,10 @@
 package com.example.android.inventoryapp;
 
-import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.app.LoaderManager;
-import android.content.ContentValues;
-import android.content.Context;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -18,6 +18,7 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.inventoryapp.data.ProductContract.ProductEntry;
 
@@ -42,6 +43,9 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
 
     private int quantity;
 
+    private String supplier;
+
+    private String name;
 
     /** Views to display detailed information */
     private TextView nameTextView;
@@ -74,31 +78,10 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         // initialize the loader
         getLoaderManager().initLoader(EXISTING_PRODUCT_LOADER, null, this);
 
-        final int tempQuantity = quantity;
-
-        final Context context = DetailsActivity.this;
-
         // set an OnClickListener onto the decrease qty button
         decreaseQtyBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int qty = tempQuantity;
-                // make sure qty cannot be negative
-                if (qty > 0) {
-                    // decrement quantity of the current product
-                    qty--;
-
-                    // Create a ContentValues object with the updated value of the quantity
-                    ContentValues values = new ContentValues();
-                    values.put(ProductEntry.COLUMN_PRODUCT_QTY, qty);
-
-                    // update quantity in the database for current product
-                    context.getContentResolver().update(currentProductUri, values, null, null);
-
-                    getLoaderManager().restartLoader(EXISTING_PRODUCT_LOADER, null, DetailsActivity.this);
-
-                    Log.v(LOG_TAG, "new quantity is: " + qty + " uri is: " + currentProductUri);
-                }
 
             }
         });
@@ -111,34 +94,28 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
             }
         });
 
-    }
+        // set an OnClickListener onto the delete button
+        deleteProductBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDeleteConfirmationDialog();
+            }
+        });
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        if (pictureUri != null)
-            outState.putString(STATE_PICTURE_URI, pictureUri.toString());
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-
-        if (savedInstanceState.containsKey(STATE_PICTURE_URI) &&
-                !savedInstanceState.getString(STATE_PICTURE_URI).equals("")) {
-            pictureUri = Uri.parse(savedInstanceState.getString(STATE_PICTURE_URI));
-
-            ViewTreeObserver viewTreeObserver = pictureView.getViewTreeObserver();
-            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @TargetApi(16)
-                @Override
-                public void onGlobalLayout() {
-                    pictureView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    pictureView.setImageBitmap(getBitmapFromUri(pictureUri));
+        // set an OnClickListener onto the order button to send an email to the supplier
+        orderBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String [] emailAdress = {supplier};
+                Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                emailIntent.setType("*/*");
+                emailIntent.putExtra(Intent.EXTRA_EMAIL, emailAdress);
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, name + " order");
+                if (emailIntent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(emailIntent);
                 }
-            });
-        }
+            }
+        });
     }
 
     @Override
@@ -178,10 +155,10 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
             int pictureColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_PICTURE);
 
             // extract values from the cursor
-            String name = cursor.getString(nameColumnIndex);
+            name = cursor.getString(nameColumnIndex);
             Float price = cursor.getFloat(priceColumnIndex);
             quantity = cursor.getInt(quantityColumnIndex);
-            String supplier = cursor.getString(supplierColumnIndex);
+            supplier = cursor.getString(supplierColumnIndex);
             pictureUri = Uri.parse(cursor.getString(pictureColumnIndex));
 
             // set the views text with the value from the database
@@ -190,8 +167,23 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
             quantityTextView.setText(String.valueOf(quantity));
             supplierTextView.setText(supplier);
 
-            // convert image uri to bitmap and set it onto the view
-            pictureView.setImageBitmap(getBitmapFromUri(pictureUri));
+            ViewTreeObserver viewTreeObserver= pictureView.getViewTreeObserver();
+            viewTreeObserver
+                    .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+
+                            // convert image uri to bitmap and set it onto the view
+                            pictureView.setImageBitmap(getBitmapFromUri(pictureUri));
+
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN)
+                                pictureView.getViewTreeObserver()
+                                        .removeOnGlobalLayoutListener(this);
+                            else
+                                pictureView.getViewTreeObserver()
+                                        .removeGlobalOnLayoutListener(this);
+                        }
+                    });
         }
     }
 
@@ -258,5 +250,58 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
+
+    /**
+     * Prompt the user to confirm that they want to delete this product.
+     */
+    private void showDeleteConfirmationDialog() {
+        // Create an AlertDialog.Builder and set the message
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.delete_dialog_msg);
+        builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Delete" button, so delete the product.
+                deleteProduct();
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Cancel" button and dismiss deleting the product
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+            }
+        });
+
+        // Create and show the AlertDialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    /**
+     * Perform the deletion of the pet in the database.
+     */
+    private void deleteProduct() {
+        // Only perform the delete if this is an existing product.
+        if (currentProductUri != null) {
+            // Call the ContentResolver to delete the product at the given content URI.
+            int rowsDeleted = getContentResolver().delete(currentProductUri, null, null);
+
+            // Show a toast message depending on whether or not the delete was successful.
+            if (rowsDeleted == 0) {
+                // If no rows were deleted, then there was an error with the delete.
+                Toast.makeText(this, getString(R.string.delete_product_failed),
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                // Otherwise, the delete was successful and we can display a toast.
+                Toast.makeText(this, getString(R.string.delete_product_successful),
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        // Close the activity
+        finish();
     }
 }
