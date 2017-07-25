@@ -2,6 +2,8 @@ package com.example.android.inventoryapp;
 
 import android.annotation.TargetApi;
 import android.app.LoaderManager;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
@@ -11,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -36,6 +39,8 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
     private static final int EXISTING_PRODUCT_LOADER = 0;
 
     private static final String STATE_PICTURE_URI = "STATE_PICTURE_URI";
+
+    private int quantity;
 
 
     /** Views to display detailed information */
@@ -68,6 +73,43 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
 
         // initialize the loader
         getLoaderManager().initLoader(EXISTING_PRODUCT_LOADER, null, this);
+
+        final int tempQuantity = quantity;
+
+        final Context context = DetailsActivity.this;
+
+        // set an OnClickListener onto the decrease qty button
+        decreaseQtyBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int qty = tempQuantity;
+                // make sure qty cannot be negative
+                if (qty > 0) {
+                    // decrement quantity of the current product
+                    qty--;
+
+                    // Create a ContentValues object with the updated value of the quantity
+                    ContentValues values = new ContentValues();
+                    values.put(ProductEntry.COLUMN_PRODUCT_QTY, qty);
+
+                    // update quantity in the database for current product
+                    context.getContentResolver().update(currentProductUri, values, null, null);
+
+                    getLoaderManager().restartLoader(EXISTING_PRODUCT_LOADER, null, DetailsActivity.this);
+
+                    Log.v(LOG_TAG, "new quantity is: " + qty + " uri is: " + currentProductUri);
+                }
+
+            }
+        });
+
+        // set an OnClickListener onto the increase qty button
+        increaseQtyBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
     }
 
@@ -138,7 +180,7 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
             // extract values from the cursor
             String name = cursor.getString(nameColumnIndex);
             Float price = cursor.getFloat(priceColumnIndex);
-            int quantity = cursor.getInt(quantityColumnIndex);
+            quantity = cursor.getInt(quantityColumnIndex);
             String supplier = cursor.getString(supplierColumnIndex);
             pictureUri = Uri.parse(cursor.getString(pictureColumnIndex));
 
