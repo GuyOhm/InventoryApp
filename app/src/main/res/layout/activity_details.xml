@@ -7,35 +7,36 @@
     tools:context="com.example.android.inventoryapp.DetailsActivity">
 
     <ImageView
-        android:layout_margin="@dimen/large_spacing"
         android:id="@+id/details_picture"
         android:layout_width="350dp"
         android:layout_height="200dp"
         android:layout_gravity="center_horizontal"
+        android:layout_margin="@dimen/large_spacing"
         android:src="@mipmap/ic_launcher" />
 
     <TextView
-        android:textAppearance="?android:textAppearanceMedium"
-        android:layout_marginBottom="@dimen/small_spacing"
         android:id="@+id/details_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/small_spacing"
         android:gravity="center_horizontal"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textColor="@color/colorAccent"
         tools:text="Name" />
 
     <TextView
-        android:layout_marginBottom="@dimen/small_spacing"
         android:id="@+id/details_price"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/small_spacing"
         android:gravity="center_horizontal"
         tools:text="Price" />
 
     <TextView
-        android:layout_marginBottom="@dimen/small_spacing"
         android:id="@+id/details_supplier"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/small_spacing"
         android:gravity="center_horizontal"
         tools:text="Supplier" />
 

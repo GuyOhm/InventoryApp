@@ -125,7 +125,7 @@ public class EditorActivity extends AppCompatActivity {
 
     private boolean dataIsValid(String name, String price, String quantity, String supplier, String picture) {
         // check if price is empty
-        if(!TextUtils.isEmpty(price)){
+        if (!TextUtils.isEmpty(price)) {
             // convert to float
             priceFloat = Float.parseFloat(price);
         } else {
@@ -133,7 +133,7 @@ public class EditorActivity extends AppCompatActivity {
         }
 
         // check if quantity is empty
-        if(!TextUtils.isEmpty(quantity)){
+        if (!TextUtils.isEmpty(quantity)) {
             // convert to integer
             quantityInt = Integer.parseInt(quantity);
         } else {

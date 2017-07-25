@@ -2,6 +2,7 @@ package com.example.android.inventoryapp;
 
 import android.app.AlertDialog;
 import android.app.LoaderManager;
+import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -26,17 +27,23 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static com.example.android.inventoryapp.data.ProductProvider.LOG_TAG;
-
 public class DetailsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    /** Content uri of the current product */
+    private static final String LOG_TAG = DetailsActivity.class.getSimpleName();
+
+    /**
+     * Content uri of the current product
+     */
     private Uri currentProductUri;
 
-    /** Uri of the picture of the current product */
+    /**
+     * Uri of the picture of the current product
+     */
     private Uri pictureUri;
 
-    /** Identifier for the product data loader */
+    /**
+     * Identifier for the product data loader
+     */
     private static final int EXISTING_PRODUCT_LOADER = 0;
 
     private static final String STATE_PICTURE_URI = "STATE_PICTURE_URI";
@@ -47,7 +54,9 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
 
     private String name;
 
-    /** Views to display detailed information */
+    /**
+     * Views to display detailed information
+     */
     private TextView nameTextView;
     private TextView priceTextView;
     private TextView quantityTextView;
@@ -82,6 +91,18 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         decreaseQtyBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (quantity > 0) {
+                    quantity--;
+                    Log.v(LOG_TAG, "qty: " + quantity);
+
+                    // Create a ContentValues object with the updated value of the quantity
+                    ContentValues values = new ContentValues();
+                    values.put(ProductEntry.COLUMN_PRODUCT_QTY, quantity);
+
+                    int rowUpadated = getContentResolver().update(currentProductUri, values, null, null);
+
+                    Log.v(LOG_TAG, "uri is: " + currentProductUri + "qty: " + quantity + "Row updated: " + rowUpadated);
+                }
 
             }
         });
@@ -90,7 +111,16 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         increaseQtyBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                quantity++;
+                Log.v(LOG_TAG, "qty: " + quantity);
 
+                // Create a ContentValues object with the updated value of the quantity
+                ContentValues values = new ContentValues();
+                values.put(ProductEntry.COLUMN_PRODUCT_QTY, quantity);
+
+                int rowUpadated = getContentResolver().update(currentProductUri, values, null, null);
+
+                Log.v(LOG_TAG, "uri is: " + currentProductUri + "qty: " + quantity + "Row updated: " + rowUpadated);
             }
         });
 
@@ -106,7 +136,7 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         orderBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String [] emailAdress = {supplier};
+                String[] emailAdress = {supplier};
                 Intent emailIntent = new Intent(Intent.ACTION_SEND);
                 emailIntent.setType("*/*");
                 emailIntent.putExtra(Intent.EXTRA_EMAIL, emailAdress);
@@ -167,7 +197,7 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
             quantityTextView.setText(String.valueOf(quantity));
             supplierTextView.setText(supplier);
 
-            ViewTreeObserver viewTreeObserver= pictureView.getViewTreeObserver();
+            ViewTreeObserver viewTreeObserver = pictureView.getViewTreeObserver();
             viewTreeObserver
                     .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                         @Override
@@ -187,8 +217,9 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         }
     }
 
-    /** Get a bitmap image from the current product Uri
-     *
+    /**
+     * Get a bitmap image from the current product Uri
+     * <p>
      * I used this post as inspiration :
      * https://discussions.udacity.com/t/unofficial-how-to-pick-an-image-from-the-gallery/314971
      * It was of a great help, thanks a million ! :)

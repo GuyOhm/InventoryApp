@@ -22,10 +22,14 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
 
     private static final String LOG_TAG = CatalogActivity.class.getSimpleName();
 
-    /** Identifier for the product data loader */
+    /**
+     * Identifier for the product data loader
+     */
     private static final int PRODUCT_LOADER = 0;
 
-    /** Adapter for the ListView */
+    /**
+     * Adapter for the ListView
+     */
     ProductCursorAdapter productCursorAdapter;
 
     @Override
@@ -102,7 +106,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
                 ProductEntry._ID,
                 ProductEntry.COLUMN_PRODUCT_NAME,
                 ProductEntry.COLUMN_PRODUCT_PRICE,
-                ProductEntry.COLUMN_PRODUCT_QTY };
+                ProductEntry.COLUMN_PRODUCT_QTY};
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context

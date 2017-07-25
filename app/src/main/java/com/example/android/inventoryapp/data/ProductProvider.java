@@ -78,7 +78,7 @@ public class ProductProvider extends ContentProvider {
             case PRODUCTS_ID:
                 // For the PRODUCTS_ID code, extract out the ID from the URI.
                 selection = ProductEntry._ID + "=?";
-                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 cursor = database.query(ProductEntry.TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
                 break;
@@ -174,7 +174,7 @@ public class ProductProvider extends ContentProvider {
             case PRODUCTS_ID:
                 // Delete a single row given by the ID in the URI
                 selection = ProductEntry._ID + "=?";
-                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 rowsDeleted = database.delete(ProductEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             default:
@@ -201,7 +201,7 @@ public class ProductProvider extends ContentProvider {
             case PRODUCTS_ID:
                 // For the PRODUCT_ID code, extract out the ID from the URI
                 selection = ProductEntry._ID + "=?";
-                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 return updateProduct(uri, contentValues, selection, selectionArgs);
             default:
                 throw new IllegalArgumentException("Update is not supported for " + uri);
