@@ -22,7 +22,8 @@
             android:id="@+id/edit_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:inputType="text" />
 
     </LinearLayout>
 
@@ -41,7 +42,8 @@
             android:id="@+id/edit_price"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:inputType="numberDecimal" />
 
     </LinearLayout>
 
@@ -60,7 +62,8 @@
             android:id="@+id/edit_quantity"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:inputType="number" />
 
     </LinearLayout>
 
@@ -79,7 +82,8 @@
             android:id="@+id/edit_supplier"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:inputType="text" />
 
     </LinearLayout>
 
